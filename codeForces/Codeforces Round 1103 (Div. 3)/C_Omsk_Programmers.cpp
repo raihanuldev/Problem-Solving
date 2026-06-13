@@ -3,59 +3,63 @@ using namespace std;
 
 using ll = long long;
 
-vector<pair<ll,ll>> getStates(ll start, ll x) {
-    vector<pair<ll,ll>> v;
+void solve()
+{
+    ll a, b, x;
+    cin >> a >> b >> x;
 
-    ll cur = start;
-    ll steps = 0;
+    if (x == 1)
+    { // specail case handekd
+        cout << abs(a - b) << "\n";
+        return;
+    }
+    vector<pair<ll, ll>> pathA;
+    ll divisions = 0, tempA = a;
+    while (tempA)
+    { // a re direct 0 te nie astesi
+        pathA.push_back({tempA, divisions});
+        tempA /= x;
+        divisions++;
+    }
+    pathA.push_back({0, divisions});
 
-    while (true) {
-        v.push_back({cur, steps});
+    ll ans = LLONG_MAX;
+    ll tempB = b;
+    divisions = 0;
+    while (tempB)
+    {
+        for (const auto &p : pathA)
+        {
+            ans = min(
+                ans,
+                abs(p.first - tempB) + p.second + divisions);
+        }
 
-        if (cur == 0) break;
-
-        cur /= x;
-        steps++;
-
-        if (steps > 40) break;
+        tempB /= x;
+        divisions++;
+    }
+    
+    for (const auto &p : pathA)
+    {
+        ans = min(
+            ans,
+            abs(p.first - tempB) + p.second + divisions);
     }
 
-    return v;
+    cout << ans << '\n';
 }
 
-int main() {
+int main()
+{
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
     int t;
     cin >> t;
 
-    while (t--) {
-        ll a, b, x;
-        cin >> a >> b >> x;
-
-        auto A = getStates(a, x);
-        auto B = getStates(b, x);
-
-        ll ans = LLONG_MAX;
-
-        for (int i = 0; i < (int)A.size(); i++) {
-            ll va = A[i].first;
-            ll da = A[i].second;
-
-            for (int j = 0; j < (int)B.size(); j++) {
-                ll vb = B[j].first;
-                ll db = B[j].second;
-
-                if (va == vb) {
-                    ll costA = da + max(0LL, a - va);
-                    ll costB = db + max(0LL, b - vb);
-                    ans = min(ans, costA + costB);
-                }
-            }
-        }
-
-        cout << ans << "\n";
+    while (t--)
+    {
+        solve();
     }
 
     return 0;
